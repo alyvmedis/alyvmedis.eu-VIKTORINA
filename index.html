@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alyvmedžių Viktorina</title>
+<style>
+body { font-family: sans-serif; background: #f0f4f0; display: flex; justify-content: center; padding: 20px; }
+.card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; width: 100%; }
+h2 { color: #2e7d32; font-size: 1.2rem; }
+.option { display: block; width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; text-align: left; background: #fff; transition: 0.3s; }
+.option:hover { background: #e8f5e9; }
+.correct { background: #c8e6c9 !important; border-color: #4caf50; }
+.wrong { background: #ffcdd2 !important; border-color: #f44336; }
+#next-btn { margin-top: 15px; width: 100%; padding: 12px; background: #2e7d32; color: white; border: none; border-radius: 8px; display: none; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="card" id="quiz">
+<div id="question-container">
+<h2 id="question-text">Klausimas</h2>
+<div id="options"></div>
+</div>
+<button id="next-btn" onclick="nextQuestion()">Kitas klausimas</button>
+<div id="result" style="display:none; text-align:center;">
+<h2>Testas baigtas!</h2>
+<p id="score"></p>
+<button class="option" onclick="location.reload()">Bandyti dar kartą</button>
+</div>
+</div>
+
+<script>
+const questions = [
+{ q: "Kaip giliai į žemę paprastai įsiskverbia pagrindinė alyvmedžio šaknų masė?", a: ["Tik 10 cm", "Virš 10 m", "Apie 1 metrą", "50 metrų ir daugiau"], correct: 2 },
+{ q: "Kas kiek metų vidutiniškai alyvmedis pakeičia savo lapus?", a: ["Kas 10 metų", "Kiekvienais metais", "Nekeičia niekada", "Kas 2–3 metus"], correct: 3 },
+{ q: "Koks procesas yra būtinas (vernalizacija), kad alyvmedis pradėtų krauti žiedus?", a: ["Ilgalaikis karštis", "Visiška tamsa", "Periodinis šalčio poveikis", "Nuolatinis laistymas"], correct: 2 }
+];
+
+let currentIdx = 0;
+let score = 0;
+
+function showQuestion() {
+const q = questions[currentIdx];
+document.getElementById("question-text").innerText = q.q;
+const optionsDiv = document.getElementById("options");
+optionsDiv.innerHTML = "";
+q.a.forEach((opt, i) => {
+const btn = document.createElement("button");
+btn.innerText = opt;
+btn.className = "option";
+btn.onclick = () => checkAnswer(i, btn);
+optionsDiv.appendChild(btn);
+});
+document.getElementById("next-btn").style.display = "none";
+}
+
+function checkAnswer(idx, btn) {
+const correct = questions[currentIdx].correct;
+const allBtns = document.querySelectorAll(".option");
+allBtns.forEach(b => b.disabled = true);
+
+if(idx === correct) {
+btn.classList.add("correct");
+score++;
+} else {
+btn.classList.add("wrong");
+allBtns[correct].classList.add("correct");
+}
+document.getElementById("next-btn").style.display = "block";
+}
+
+function nextQuestion() {
+currentIdx++;
+if(currentIdx < questions.length) {
+showQuestion();
+} else {
+document.getElementById("question-container").style.display = "none";
+document.getElementById("next-btn").style.display = "none";
+document.getElementById("result").style.display = "block";
+document.getElementById("score").innerText = `Tavo rezultatas: ${score} iš ${questions.length}`;
+}
+}
+
+showQuestion();
+</script>
+
+</body>
+</html>
