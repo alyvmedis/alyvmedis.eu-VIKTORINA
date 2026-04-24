@@ -43,14 +43,13 @@ h2 { color: var(--primary); font-size: 1.2rem; margin-bottom: 15px; min-height: 
 .score-circle { width: 80px; height: 80px; line-height: 80px; border-radius: 50%; background: var(--primary); color: white; font-size: 1.6rem; margin: 0 auto 15px; font-weight: bold; }
 .expert-msg { color: #2e7d32; font-weight: bold; font-size: 1.2rem; margin-top: 5px; line-height: 1.4; }
 
-/* Aukso luitų skyrius */
 #gift-section { display: none; margin-top: 20px; padding: 20px; border: 3px solid var(--accent); border-radius: 15px; background: #fffcf0; animation: pulse 2s infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); } 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); } }
 
 .gift-title { color: var(--secondary); font-weight: 900; margin-bottom: 10px; font-size: 1.1rem; text-transform: uppercase; }
 .gift-grid { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
 .gift-box { width: 50px; height: 60px; background: linear-gradient(145deg, #ffd700, #b8860b); color: white; border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 1.2rem; box-shadow: 2px 4px 6px rgba(0,0,0,0.3); transition: 0.2s; border: 1px solid #fff; }
-.gift-box:hover { transform: translateY(-5px) scale(1.05); }
+
 .gift-box.disabled { opacity: 0.5; filter: grayscale(1); cursor: default; transform: none; }
 
 .prize-display { display: none; font-weight: bold; color: var(--secondary); margin-top: 15px; background: white; padding: 20px; border-radius: 10px; border: 2px solid var(--accent); text-align: center; animation: fadeIn 0.5s ease-in; }
@@ -59,6 +58,8 @@ h2 { color: var(--primary); font-size: 1.2rem; margin-bottom: 15px; min-height: 
 
 .success-link { display: none; text-decoration: none; background: var(--primary); color: white; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; margin-top: 20px; display: inline-block; width: 100%; box-sizing: border-box; }
 .retry-btn { margin-top: 20px; padding: 15px; width: 100%; background: var(--secondary); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1rem;}
+
+.promo-code { background: #ffd700; padding: 5px 10px; border-radius: 5px; font-family: monospace; font-size: 1.3rem; letter-spacing: 2px; border: 1px dashed #b8860b; color: #000; margin: 10px 0; display: inline-block; }
 </style>
 </head>
 <body>
@@ -99,14 +100,17 @@ h2 { color: var(--primary); font-size: 1.2rem; margin-bottom: 15px; min-height: 
 <div id="prize-display-area" class="prize-display">
 <p style="color: var(--accent); font-size: 1.2rem; margin-bottom: 10px;">VALIO! JŪSŲ PRIZAS:</p>
 <img id="prize-img" src="" alt="Prizas" class="prize-image">
-<p id="prize-text" style="font-size: 1.1rem; margin-bottom: 15px;"></p>
-<div style="background: #f0f0f0; padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: normal; color: #333; line-height: 1.4;">
-🎁 <strong>Kaip atsiimti?</strong> Apsipirkite <strong>alyvmedis.eu</strong> už €79 ar daugiau, o krepšelio komentare įrašykite šį prizą. Mes jį pridėsime nemokamai!
+<p id="prize-text" style="font-size: 1.1rem; margin-bottom: 5px;"></p>
+<p style="font-size: 0.9rem; font-weight: normal; margin-bottom: 5px;">Pirkimo pastaboje įrašykite šį kodą:</p>
+<div id="promo-display" class="promo-code"></div>
+
+<div style="background: #f0f0f0; padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: normal; color: #333; line-height: 1.4; margin-top: 15px;">
+🎁 Apsipirkite <strong>alyvmedis.eu</strong> už <strong>€79</strong> ar daugiau, įrašykite kodą pastaboje ir mes pridėsime šią dovaną į Jūsų siuntą!
 </div>
 </div>
 </div>
 
-<a id="expert-link" href="https://alyvmedis.eu" target="_blank" class="success-link" style="display:none;">Eiti į parduotuvę ➔</a>
+<a id="expert-link" href="https://alyvmedis.eu" target="_blank" class="success-link" style="display:none;">Eiti į alyvmedis.eu ➔</a>
 <button id="retry-btn" class="retry-btn" onclick="window.location.reload();">Bandyti dar kartą</button>
 </div>
 </div>
@@ -118,13 +122,13 @@ const questions = [
 { q: "Koks procesas yra būtinas (vernalizacija), kad alyvmedis pradėtų krauti žiedus?", a: ["Ilgalaikis karštis", "Visiška tamsa", "Periodinis šalčio poveikis", "Nuolatinis laistymas"], c: 2, img: "IMG_1406.JPG" }
 ];
 
-// TAVO PRIZAI
+// TAVO TIKRI PRIZAI IR KODAI
 const prizes = [
-{ name: "Premium Extra Virgin alyvuogių aliejus", img: "prizas1.jpg" },
-{ name: "Alyvuogių degustacinis rinkinys", img: "prizas2.jpg" },
-{ name: "Rankų darbo alyvmedžio mentelė", img: "prizas3.jpg" },
-{ name: "Išskirtinis užkandžių indelis", img: "prizas4.jpg" },
-{ name: "Natūralus alyvuogių muilas", img: "prizas5.jpg" }
+{ name: "Carnaroli ryžiai 1kg", code: "carn", img: "prizas1.jpg" },
+{ name: "Migdolai 500g", code: "migd", img: "prizas2.jpg" },
+{ name: "Sukkary datulės 750g", code: "dat", img: "prizas3.jpg" },
+{ name: "Balzaminis vyno kremas su mandarinais", code: "krem", img: "prizas4.jpg" },
+{ name: "Carnaroli Integrale ryžiai 1kg", code: "inte", img: "prizas5.jpg" }
 ];
 
 let current = 0; let score = 0;
@@ -170,48 +174,37 @@ document.getElementById("quiz-ui").style.display = "none";
 document.getElementById("result-box").style.display = "block";
 document.getElementById("final-score").innerText = score + "/" + questions.length;
 
-const retryBtn = document.getElementById("retry-btn");
-const successLink = document.getElementById("expert-link");
-const giftSection = document.getElementById("gift-section");
-
 if (score === 3) {
 document.getElementById("feedback").innerText = "Sveikiname tapus Alyvmedžių Ekspertu! 🌿🏆";
-retryBtn.style.display = "none";
-giftSection.style.display = "block";
+document.getElementById("retry-btn").style.display = "none";
+document.getElementById("gift-section").style.display = "block";
 document.getElementById("sound-success").play().catch(e => {});
 } else {
-document.getElementById("feedback").innerText = score === 2 ? "Tu jau beveik ekspertas! Pritrūko tiek nedaug..." : "Bandykite dar kartą!";
-retryBtn.style.display = "block";
-successLink.style.display = "none";
-giftSection.style.display = "none";
+document.getElementById("feedback").innerText = score === 2 ? "Beveik pavyko! Pritrūko vieno teisingo atsakymo iki prizo..." : "Bandykite dar kartą!";
+document.getElementById("retry-btn").style.display = "block";
+document.getElementById("gift-section").style.display = "none";
 }
 }
 
 function revealRandomPrize(clickedBox) {
-// Atsitiktinumas: išrenkame prizą nepriklausomai nuo to, kurį luitą paspaudė
 const randomIndex = Math.floor(Math.random() * prizes.length);
 const selectedPrize = prizes[randomIndex];
 
 const displayArea = document.getElementById("prize-display-area");
-const prizeText = document.getElementById("prize-text");
-const prizeImg = document.getElementById("prize-img");
-
-prizeText.innerText = selectedPrize.name;
-prizeImg.src = selectedPrize.img;
+document.getElementById("prize-text").innerText = selectedPrize.name;
+document.getElementById("prize-img").src = selectedPrize.img;
+document.getElementById("promo-display").innerText = selectedPrize.code;
 
 displayArea.style.display = "block";
 document.getElementById("expert-link").style.display = "block";
-
-// „WOW“ garsas!
 document.getElementById("sound-wow").play().catch(e => {});
 
-// Išjungiame visus luitus, kad nebūtų antro bandymo
 document.querySelectorAll(".gift-box").forEach(box => {
 box.classList.add("disabled");
 box.onclick = null;
 });
-clickedBox.style.transform = "scale(1.2)";
-clickedBox.style.zIndex = "10";
+clickedBox.style.transform = "scale(1.1)";
+clickedBox.style.background = "var(--secondary)";
 }
 
 loadQuestion();
