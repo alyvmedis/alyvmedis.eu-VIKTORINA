@@ -20,6 +20,7 @@ h2 { color: var(--primary); font-size: 1.3rem; margin-bottom: 20px; min-height: 
 #result-box { display: none; text-align: center; }
 .score-circle { width: 100px; height: 100px; line-height: 100px; border-radius: 50%; background: var(--primary); color: white; font-size: 2rem; margin: 0 auto 20px; font-weight: bold; }
 .expert-msg { color: #2e7d32; font-weight: bold; font-size: 1.2rem; margin-top: 10px; line-height: 1.4; }
+.retry-btn { margin-top: 20px; padding: 15px; width: 100%; background: var(--secondary); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -36,7 +37,7 @@ h2 { color: var(--primary); font-size: 1.3rem; margin-bottom: 20px; min-height: 
 <div class="score-circle" id="final-score">0</div>
 <h2 id="title">Pabaiga!</h2>
 <p id="feedback" class="expert-msg"></p>
-<button class="option" style="text-align:center; margin-top:20px;" onclick="location.reload()">Bandyti dar kartą</button>
+<button class="retry-btn" onclick="window.location.reload();">Bandyti dar kartą</button>
 </div>
 </div>
 
