@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alyvmedžių Ekspertas</title>
 <style>
-:root { --primary: #556b2f; --secondary: #8b4513; --bg-fallback: #fdfcf0; }
+:root { --primary: #556b2f; --secondary: #8b4513; --bg-fallback: #fdfcf0; --accent: #d4af37; }
 
 body {
 font-family: 'Segoe UI', sans-serif;
@@ -18,49 +18,13 @@ display: flex; justify-content: center; align-items: center;
 min-height: 100vh; margin: 0; padding: 15px;
 }
 
-.container { background: rgba(255, 255, 255, 0.95); width: 100%; max-width: 450px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 8px solid var(--primary); box-sizing: border-box; }
+.container { background: rgba(255, 255, 255, 0.95); width: 100%; max-width: 450px; padding: 25px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); border-top: 8px solid var(--primary); box-sizing: border-box; }
 
-/* Nuotraukos konteineris su nuoroda fone */
-.image-container {
-position: relative;
-width: 100%;
-height: 200px;
-border-radius: 12px;
-margin-bottom: 15px;
-overflow: hidden;
-border: 1px solid #ddd;
-}
+.image-container { position: relative; width: 100%; height: 200px; border-radius: 12px; margin-bottom: 15px; overflow: hidden; border: 1px solid #ddd; }
+.q-image { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-.q-image {
-width: 100%;
-height: 100%;
-object-fit: cover;
-display: block;
-}
-
-/* Aktyvi balta nuoroda ant nuotraukos apacioje */
-.photo-watermark {
-position: absolute;
-bottom: 5px;
-right: 10px;
-color: white;
-text-decoration: none;
-font-size: 11px;
-font-weight: bold;
-text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-z-index: 5;
-}
-
-/* Tamsesnis sluoksnis apacioje, kad baltas tekstas geriau matytusi */
-.image-container::after {
-content: '';
-position: absolute;
-bottom: 0; left: 0; right: 0;
-height: 30px;
-background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
-pointer-events: none;
-z-index: 1;
-}
+.photo-watermark { position: absolute; bottom: 5px; right: 10px; color: white; text-decoration: none; font-size: 11px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.7); z-index: 5; }
+.image-container::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 30px; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); pointer-events: none; z-index: 1; }
 
 .progress-bar { width: 100%; height: 8px; background: #eee; border-radius: 4px; margin-bottom: 15px; overflow: hidden; }
 .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.4s; }
@@ -76,12 +40,24 @@ h2 { color: var(--primary); font-size: 1.2rem; margin-bottom: 15px; min-height: 
 
 #next-btn { margin-top: 20px; width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; display: none; font-size: 1rem;}
 #result-box { display: none; text-align: center; }
-.score-circle { width: 90px; height: 90px; line-height: 90px; border-radius: 50%; background: var(--primary); color: white; font-size: 1.8rem; margin: 0 auto 15px; font-weight: bold; }
-.expert-msg { color: #2e7d32; font-weight: bold; font-size: 1.1rem; margin-top: 10px; line-height: 1.4; margin-bottom: 5px;}
+.score-circle { width: 80px; height: 80px; line-height: 80px; border-radius: 50%; background: var(--primary); color: white; font-size: 1.6rem; margin: 0 auto 15px; font-weight: bold; }
+.expert-msg { color: #2e7d32; font-weight: bold; font-size: 1.2rem; margin-top: 5px; line-height: 1.4; }
 
-/* Galine aktyvi nuoroda po teisingu atsakymu */
-.success-link { display: none; text-decoration: underline; color: #2e7d32; font-weight: bold; font-size: 1.1rem; margin-top: 5px;}
+/* Aukso luitų skyrius */
+#gift-section { display: none; margin-top: 20px; padding: 20px; border: 3px solid var(--accent); border-radius: 15px; background: #fffcf0; animation: pulse 2s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); } 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); } }
 
+.gift-title { color: var(--secondary); font-weight: 900; margin-bottom: 10px; font-size: 1.1rem; text-transform: uppercase; }
+.gift-grid { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+.gift-box { width: 50px; height: 60px; background: linear-gradient(145deg, #ffd700, #b8860b); color: white; border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 1.2rem; box-shadow: 2px 4px 6px rgba(0,0,0,0.3); transition: 0.2s; border: 1px solid #fff; }
+.gift-box:hover { transform: translateY(-5px) scale(1.05); }
+.gift-box.disabled { opacity: 0.5; filter: grayscale(1); cursor: default; transform: none; }
+
+.prize-display { display: none; font-weight: bold; color: var(--secondary); margin-top: 15px; background: white; padding: 20px; border-radius: 10px; border: 2px solid var(--accent); text-align: center; animation: fadeIn 0.5s ease-in; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.prize-image { width: 100%; max-width: 200px; height: auto; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+.success-link { display: none; text-decoration: none; background: var(--primary); color: white; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; margin-top: 20px; display: inline-block; width: 100%; box-sizing: border-box; }
 .retry-btn { margin-top: 20px; padding: 15px; width: 100%; background: var(--secondary); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1rem;}
 </style>
 </head>
@@ -90,6 +66,7 @@ h2 { color: var(--primary); font-size: 1.2rem; margin-bottom: 15px; min-height: 
 <audio id="sound-correct" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
 <audio id="sound-wrong" src="https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3"></audio>
 <audio id="sound-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+<audio id="sound-wow" src="https://assets.mixkit.co/active_storage/sfx/1433/1433-preview.mp3"></audio>
 
 <div class="container">
 <div id="quiz-ui">
@@ -105,81 +82,87 @@ h2 { color: var(--primary); font-size: 1.2rem; margin-bottom: 15px; min-height: 
 
 <div id="result-box">
 <div class="score-circle" id="final-score">0</div>
-<h2 id="title">Pabaiga!</h2>
+<h2 id="title">Rezultatas</h2>
 <p id="feedback" class="expert-msg"></p>
-<a id="expert-link" href="https://alyvmedis.eu" target="_blank" class="success-link">alyvmedis.eu</a>
+
+<div id="gift-section">
+<p class="gift-title">🌟 DIDYSIS LAIMĖJIMAS! 🌟</p>
+<p style="font-size: 0.9rem; margin-bottom: 15px; color: #444;">Spauskite ant bet kurio aukso luito ir sužinokite savo prizą!</p>
+<div class="gift-grid">
+<div class="gift-box" onclick="revealRandomPrize(this)">?</div>
+<div class="gift-box" onclick="revealRandomPrize(this)">?</div>
+<div class="gift-box" onclick="revealRandomPrize(this)">?</div>
+<div class="gift-box" onclick="revealRandomPrize(this)">?</div>
+<div class="gift-box" onclick="revealRandomPrize(this)">?</div>
+</div>
+
+<div id="prize-display-area" class="prize-display">
+<p style="color: var(--accent); font-size: 1.2rem; margin-bottom: 10px;">VALIO! JŪSŲ PRIZAS:</p>
+<img id="prize-img" src="" alt="Prizas" class="prize-image">
+<p id="prize-text" style="font-size: 1.1rem; margin-bottom: 15px;"></p>
+<div style="background: #f0f0f0; padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: normal; color: #333; line-height: 1.4;">
+🎁 <strong>Kaip atsiimti?</strong> Apsipirkite <strong>alyvmedis.eu</strong> už €79 ar daugiau, o krepšelio komentare įrašykite šį prizą. Mes jį pridėsime nemokamai!
+</div>
+</div>
+</div>
+
+<a id="expert-link" href="https://alyvmedis.eu" target="_blank" class="success-link" style="display:none;">Eiti į parduotuvę ➔</a>
 <button id="retry-btn" class="retry-btn" onclick="window.location.reload();">Bandyti dar kartą</button>
 </div>
 </div>
 
 <script>
 const questions = [
-{
-q: "Kaip giliai į žemę paprastai įsiskverbia pagrindinė alyvmedžio šaknų masė?",
-a: ["Tik 10 cm", "Virš 10 m", "Apie 1 metrą", "50 metrų ir daugiau"],
-c: 2,
-img: "Alyvmedis.JPG"
-},
-{
-q: "Kas kiek metų vidutiniškai alyvmedis pakeičia savo lapus?",
-a: ["Kas 10 metų", "Kiekvienais metais", "Nekeičia niekada", "Kas 2–3 metus"],
-c: 3,
-img: "IMG1410.JPG"
-},
-{
-q: "Koks procesas yra būtinas (vernalizacija), kad alyvmedis pradėtų krauti žiedus?",
-a: ["Ilgalaikis karštis", "Visiška tamsa", "Periodinis šalčio poveikis", "Nuolatinis laistymas"],
-c: 2,
-img: "IMG_1406.JPG"
-}
+{ q: "Kaip giliai į žemę paprastai įsiskverbia pagrindinė alyvmedžio šaknų masė?", a: ["Tik 10 cm", "Virš 10 m", "Apie 1 metrą", "50 metrų ir daugiau"], c: 2, img: "Alyvmedis.JPG" },
+{ q: "Kas kiek metų vidutiniškai alyvmedis pakeičia savo lapus?", a: ["Kas 10 metų", "Kiekvienais metais", "Nekeičia niekada", "Kas 2–3 metus"], c: 3, img: "IMG1410.JPG" },
+{ q: "Koks procesas yra būtinas (vernalizacija), kad alyvmedis pradėtų krauti žiedus?", a: ["Ilgalaikis karštis", "Visiška tamsa", "Periodinis šalčio poveikis", "Nuolatinis laistymas"], c: 2, img: "IMG_1406.JPG" }
 ];
 
-let current = 0;
-let score = 0;
+// TAVO PRIZAI
+const prizes = [
+{ name: "Premium Extra Virgin alyvuogių aliejus", img: "prizas1.jpg" },
+{ name: "Alyvuogių degustacinis rinkinys", img: "prizas2.jpg" },
+{ name: "Rankų darbo alyvmedžio mentelė", img: "prizas3.jpg" },
+{ name: "Išskirtinis užkandžių indelis", img: "prizas4.jpg" },
+{ name: "Natūralus alyvuogių muilas", img: "prizas5.jpg" }
+];
+
+let current = 0; let score = 0;
 
 function loadQuestion() {
 const data = questions[current];
 document.getElementById("question").innerText = data.q;
 document.getElementById("q-img").src = data.img;
-
 const optionsDiv = document.getElementById("options");
 optionsDiv.innerHTML = "";
-
 data.a.forEach((opt, i) => {
 const b = document.createElement("button");
-b.innerText = opt;
-b.className = "option";
+b.innerText = opt; b.className = "option";
 b.onclick = () => select(i, b);
 optionsDiv.appendChild(b);
 });
-
 document.getElementById("progress").style.width = ((current / questions.length) * 100) + "%";
 document.getElementById("next-btn").style.display = "none";
 }
 
 function select(idx, btn) {
 const correct = questions[current].c;
-const all = document.querySelectorAll(".option");
-all.forEach(b => b.disabled = true);
-
+document.querySelectorAll(".option").forEach(b => b.disabled = true);
 if(idx === correct) {
 btn.classList.add("selected-correct");
-document.getElementById("sound-correct").play().catch(e => console.log("Garsas blokuojamas"));
+document.getElementById("sound-correct").play().catch(e => {});
 score++;
 } else {
 btn.classList.add("selected-wrong");
-document.getElementById("sound-wrong").play().catch(e => console.log("Garsas blokuojamas"));
+document.getElementById("sound-wrong").play().catch(e => {});
 }
 document.getElementById("next-btn").style.display = "block";
 }
 
 function handleNext() {
 current++;
-if(current < questions.length) {
-loadQuestion();
-} else {
-showResults();
-}
+if(current < questions.length) loadQuestion();
+else showResults();
 }
 
 function showResults() {
@@ -189,28 +172,46 @@ document.getElementById("final-score").innerText = score + "/" + questions.lengt
 
 const retryBtn = document.getElementById("retry-btn");
 const successLink = document.getElementById("expert-link");
-let msg = "";
+const giftSection = document.getElementById("gift-section");
 
 if (score === 3) {
-msg = "Sveikinu, Jūs tikras alyvmedžių ekspertas! 🌿🏆";
+document.getElementById("feedback").innerText = "Sveikiname tapus Alyvmedžių Ekspertu! 🌿🏆";
 retryBtn.style.display = "none";
-successLink.style.display = "block"; // Parodome aktyvia nuoroda tik sekmes atveju
-document.getElementById("sound-success").play().catch(e => console.log("Garsas blokuojamas"));
-} else if (score === 2) {
-msg = "Tu jau beveik alyvmedžių ekspertas!";
-retryBtn.style.display = "block";
-successLink.style.display = "none";
-} else if (score === 1) {
-msg = "Tu jau alyvmedžių pradinukas!";
-retryBtn.style.display = "block";
-successLink.style.display = "none";
+giftSection.style.display = "block";
+document.getElementById("sound-success").play().catch(e => {});
 } else {
-msg = "Bandyk dar kartą!";
+document.getElementById("feedback").innerText = score === 2 ? "Tu jau beveik ekspertas! Pritrūko tiek nedaug..." : "Bandykite dar kartą!";
 retryBtn.style.display = "block";
 successLink.style.display = "none";
+giftSection.style.display = "none";
+}
 }
 
-document.getElementById("feedback").innerText = msg;
+function revealRandomPrize(clickedBox) {
+// Atsitiktinumas: išrenkame prizą nepriklausomai nuo to, kurį luitą paspaudė
+const randomIndex = Math.floor(Math.random() * prizes.length);
+const selectedPrize = prizes[randomIndex];
+
+const displayArea = document.getElementById("prize-display-area");
+const prizeText = document.getElementById("prize-text");
+const prizeImg = document.getElementById("prize-img");
+
+prizeText.innerText = selectedPrize.name;
+prizeImg.src = selectedPrize.img;
+
+displayArea.style.display = "block";
+document.getElementById("expert-link").style.display = "block";
+
+// „WOW“ garsas!
+document.getElementById("sound-wow").play().catch(e => {});
+
+// Išjungiame visus luitus, kad nebūtų antro bandymo
+document.querySelectorAll(".gift-box").forEach(box => {
+box.classList.add("disabled");
+box.onclick = null;
+});
+clickedBox.style.transform = "scale(1.2)";
+clickedBox.style.zIndex = "10";
 }
 
 loadQuestion();
