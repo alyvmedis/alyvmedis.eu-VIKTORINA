@@ -3,87 +3,111 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Alyvmedžių Viktorina</title>
+<title>Alyvmedžių Ekspertas</title>
 <style>
-body { font-family: sans-serif; background: #f0f4f0; display: flex; justify-content: center; padding: 20px; }
-.card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; width: 100%; }
-h2 { color: #2e7d32; font-size: 1.2rem; }
-.option { display: block; width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; text-align: left; background: #fff; transition: 0.3s; }
-.option:hover { background: #e8f5e9; }
-.correct { background: #c8e6c9 !important; border-color: #4caf50; }
-.wrong { background: #ffcdd2 !important; border-color: #f44336; }
-#next-btn { margin-top: 15px; width: 100%; padding: 12px; background: #2e7d32; color: white; border: none; border-radius: 8px; display: none; cursor: pointer; }
+:root { --primary: #556b2f; --secondary: #8b4513; --bg: #fdfcf0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
+.container { background: white; width: 100%; max-width: 450px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 8px solid var(--primary); }
+.progress-bar { width: 100%; height: 8px; background: #eee; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.4s; }
+h2 { color: var(--primary); font-size: 1.3rem; margin-bottom: 20px; min-height: 3em; }
+.options-grid { display: grid; gap: 10px; }
+.option { padding: 15px; border: 2px solid #f0f0f0; border-radius: 12px; background: none; cursor: pointer; text-align: left; font-size: 1rem; transition: all 0.2s ease; color: #444; width: 100%; box-sizing: border-box; }
+.option:hover:not(:disabled) { border-color: var(--primary); background: #f9fbf2; }
+.correct { background: #e8f5e9 !important; border-color: #4caf50 !important; color: #2e7d32 !important; font-weight: bold; }
+.wrong { background: #ffebee !important; border-color: #f44336 !important; color: #c62828 !important; }
+#next-btn { margin-top: 25px; width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; display: none; }
+#result-box { display: none; text-align: center; }
+.score-circle { width: 100px; height: 100px; line-height: 100px; border-radius: 50%; background: var(--primary); color: white; font-size: 2rem; margin: 0 auto 20px; font-weight: bold; }
+.expert-msg { color: #2e7d32; font-weight: bold; font-size: 1.2rem; margin-top: 10px; line-height: 1.4; }
 </style>
 </head>
 <body>
 
-<div class="card" id="quiz">
-<div id="question-container">
-<h2 id="question-text">Klausimas</h2>
-<div id="options"></div>
+<div class="container">
+<div id="quiz-ui">
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+<h2 id="question">Kraunama...</h2>
+<div id="options" class="options-grid"></div>
+<button id="next-btn" onclick="handleNext()">Kitas klausimas</button>
 </div>
-<button id="next-btn" onclick="nextQuestion()">Kitas klausimas</button>
-<div id="result" style="display:none; text-align:center;">
-<h2>Testas baigtas!</h2>
-<p id="score"></p>
-<button class="option" onclick="location.reload()">Bandyti dar kartą</button>
+
+<div id="result-box">
+<div class="score-circle" id="final-score">0</div>
+<h2 id="title">Pabaiga!</h2>
+<p id="feedback" class="expert-msg"></p>
+<button class="option" style="text-align:center; margin-top:20px;" onclick="location.reload()">Bandyti dar kartą</button>
 </div>
 </div>
 
 <script>
 const questions = [
-{ q: "Kaip giliai į žemę paprastai įsiskverbia pagrindinė alyvmedžio šaknų masė?", a: ["Tik 10 cm", "Virš 10 m", "Apie 1 metrą", "50 metrų ir daugiau"], correct: 2 },
-{ q: "Kas kiek metų vidutiniškai alyvmedis pakeičia savo lapus?", a: ["Kas 10 metų", "Kiekvienais metais", "Nekeičia niekada", "Kas 2–3 metus"], correct: 3 },
-{ q: "Koks procesas yra būtinas (vernalizacija), kad alyvmedis pradėtų krauti žiedus?", a: ["Ilgalaikis karštis", "Visiška tamsa", "Periodinis šalčio poveikis", "Nuolatinis laistymas"], correct: 2 }
+{ q: "Kaip giliai į žemę paprastai įsiskverbia pagrindinė alyvmedžio šaknų masė?", a: ["Tik 10 cm", "Virš 10 m", "Apie 1 metrą", "50 metrų ir daugiau"], c: 2 },
+{ q: "Kas kiek metų vidutiniškai alyvmedis pakeičia savo lapus?", a: ["Kas 10 metų", "Kiekvienais metais", "Nekeičia niekada", "Kas 2–3 metus"], c: 3 },
+{ q: "Koks procesas yra būtinas (vernalizacija), kad alyvmedis pradėtų krauti žiedus?", a: ["Ilgalaikis karštis", "Visiška tamsa", "Periodinis šalčio poveikis", "Nuolatinis laistymas"], c: 2 }
 ];
 
-let currentIdx = 0;
+let current = 0;
 let score = 0;
 
-function showQuestion() {
-const q = questions[currentIdx];
-document.getElementById("question-text").innerText = q.q;
+function loadQuestion() {
+const data = questions[current];
+document.getElementById("question").innerText = data.q;
 const optionsDiv = document.getElementById("options");
 optionsDiv.innerHTML = "";
-q.a.forEach((opt, i) => {
-const btn = document.createElement("button");
-btn.innerText = opt;
-btn.className = "option";
-btn.onclick = () => checkAnswer(i, btn);
-optionsDiv.appendChild(btn);
+
+data.a.forEach((opt, i) => {
+const b = document.createElement("button");
+b.innerText = opt;
+b.className = "option";
+b.onclick = () => select(i, b);
+optionsDiv.appendChild(b);
 });
+
+document.getElementById("progress").style.width = ((current / questions.length) * 100) + "%";
 document.getElementById("next-btn").style.display = "none";
 }
 
-function checkAnswer(idx, btn) {
-const correct = questions[currentIdx].correct;
-const allBtns = document.querySelectorAll(".option");
-allBtns.forEach(b => b.disabled = true);
+function select(idx, btn) {
+const correct = questions[current].c;
+const all = document.querySelectorAll(".option");
+all.forEach(b => b.disabled = true);
 
 if(idx === correct) {
 btn.classList.add("correct");
 score++;
 } else {
 btn.classList.add("wrong");
-allBtns[correct].classList.add("correct");
+all[correct].classList.add("correct");
 }
 document.getElementById("next-btn").style.display = "block";
 }
 
-function nextQuestion() {
-currentIdx++;
-if(currentIdx < questions.length) {
-showQuestion();
+function handleNext() {
+current++;
+if(current < questions.length) {
+loadQuestion();
 } else {
-document.getElementById("question-container").style.display = "none";
-document.getElementById("next-btn").style.display = "none";
-document.getElementById("result").style.display = "block";
-document.getElementById("score").innerText = `Tavo rezultatas: ${score} iš ${questions.length}`;
+showResults();
 }
 }
 
-showQuestion();
+function showResults() {
+document.getElementById("quiz-ui").style.display = "none";
+document.getElementById("result-box").style.display = "block";
+document.getElementById("final-score").innerText = score + "/" + questions.length;
+
+let msg = "";
+if(score === questions.length) {
+msg = "Sveikinu, Jūs tikras alyvmedžių ekspertas! 🌿🏆";
+} else {
+msg = "Ačiū, kad dalyvavote! Pabandykite dar kartą, kad taptumėte tikru ekspertu.";
+}
+
+document.getElementById("feedback").innerText = msg;
+}
+
+loadQuestion();
 </script>
-
 </body>
 </html>
