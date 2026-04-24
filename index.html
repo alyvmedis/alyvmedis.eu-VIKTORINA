@@ -18,17 +18,48 @@ display: flex; justify-content: center; align-items: center;
 min-height: 100vh; margin: 0; padding: 15px;
 }
 
-.container { background: rgba(255, 255, 255, 0.95); width: 100%; max-width: 450px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 8px solid var(--primary); }
+.container { background: rgba(255, 255, 255, 0.95); width: 100%; max-width: 450px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 8px solid var(--primary); box-sizing: border-box; }
 
-/* Nuotraukos stilius virš klausimo */
-.q-image {
+/* Nuotraukos konteineris su nuoroda fone */
+.image-container {
+position: relative;
 width: 100%;
 height: 200px;
-object-fit: cover;
 border-radius: 12px;
 margin-bottom: 15px;
-display: block;
+overflow: hidden;
 border: 1px solid #ddd;
+}
+
+.q-image {
+width: 100%;
+height: 100%;
+object-fit: cover;
+display: block;
+}
+
+/* Aktyvi balta nuoroda ant nuotraukos apacioje */
+.photo-watermark {
+position: absolute;
+bottom: 5px;
+right: 10px;
+color: white;
+text-decoration: none;
+font-size: 11px;
+font-weight: bold;
+text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+z-index: 5;
+}
+
+/* Tamsesnis sluoksnis apacioje, kad baltas tekstas geriau matytusi */
+.image-container::after {
+content: '';
+position: absolute;
+bottom: 0; left: 0; right: 0;
+height: 30px;
+background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
+pointer-events: none;
+z-index: 1;
 }
 
 .progress-bar { width: 100%; height: 8px; background: #eee; border-radius: 4px; margin-bottom: 15px; overflow: hidden; }
@@ -37,17 +68,21 @@ border: 1px solid #ddd;
 h2 { color: var(--primary); font-size: 1.2rem; margin-bottom: 15px; min-height: 2.5em; }
 
 .options-grid { display: grid; gap: 8px; }
-.option { padding: 14px; border: 2px solid #f0f0f0; border-radius: 12px; background: white; cursor: pointer; text-align: left; font-size: 0.95rem; transition: all 0.2s ease; color: #444; width: 100%; }
+.option { padding: 14px; border: 2px solid #f0f0f0; border-radius: 12px; background: white; cursor: pointer; text-align: left; font-size: 0.95rem; transition: all 0.2s ease; color: #444; width: 100%; box-sizing: border-box; }
 .option:hover:not(:disabled) { border-color: var(--primary); background: #f9fbf2; }
 
 .selected-correct { background: #e8f5e9 !important; border-color: #4caf50 !important; color: #2e7d32 !important; font-weight: bold; }
 .selected-wrong { background: #ffebee !important; border-color: #f44336 !important; color: #c62828 !important; }
 
-#next-btn { margin-top: 20px; width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; display: none; }
+#next-btn { margin-top: 20px; width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; display: none; font-size: 1rem;}
 #result-box { display: none; text-align: center; }
 .score-circle { width: 90px; height: 90px; line-height: 90px; border-radius: 50%; background: var(--primary); color: white; font-size: 1.8rem; margin: 0 auto 15px; font-weight: bold; }
-.expert-msg { color: #2e7d32; font-weight: bold; font-size: 1.1rem; margin-top: 10px; line-height: 1.4; }
-.retry-btn { margin-top: 20px; padding: 15px; width: 100%; background: var(--secondary); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+.expert-msg { color: #2e7d32; font-weight: bold; font-size: 1.1rem; margin-top: 10px; line-height: 1.4; margin-bottom: 5px;}
+
+/* Galine aktyvi nuoroda po teisingu atsakymu */
+.success-link { display: none; text-decoration: underline; color: #2e7d32; font-weight: bold; font-size: 1.1rem; margin-top: 5px;}
+
+.retry-btn { margin-top: 20px; padding: 15px; width: 100%; background: var(--secondary); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1rem;}
 </style>
 </head>
 <body>
@@ -59,7 +94,10 @@ h2 { color: var(--primary); font-size: 1.2rem; margin-bottom: 15px; min-height: 
 <div class="container">
 <div id="quiz-ui">
 <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+<div class="image-container">
 <img id="q-img" src="" alt="Alyvmedis" class="q-image">
+<a href="https://alyvmedis.eu" target="_blank" class="photo-watermark">alyvmedis.eu</a>
+</div>
 <h2 id="question">Kraunama...</h2>
 <div id="options" class="options-grid"></div>
 <button id="next-btn" onclick="handleNext()">Kitas klausimas</button>
@@ -69,6 +107,7 @@ h2 { color: var(--primary); font-size: 1.2rem; margin-bottom: 15px; min-height: 
 <div class="score-circle" id="final-score">0</div>
 <h2 id="title">Pabaiga!</h2>
 <p id="feedback" class="expert-msg"></p>
+<a id="expert-link" href="https://alyvmedis.eu" target="_blank" class="success-link">alyvmedis.eu</a>
 <button id="retry-btn" class="retry-btn" onclick="window.location.reload();">Bandyti dar kartą</button>
 </div>
 </div>
@@ -149,21 +188,26 @@ document.getElementById("result-box").style.display = "block";
 document.getElementById("final-score").innerText = score + "/" + questions.length;
 
 const retryBtn = document.getElementById("retry-btn");
+const successLink = document.getElementById("expert-link");
 let msg = "";
 
 if (score === 3) {
 msg = "Sveikinu, Jūs tikras alyvmedžių ekspertas! 🌿🏆";
 retryBtn.style.display = "none";
+successLink.style.display = "block"; // Parodome aktyvia nuoroda tik sekmes atveju
 document.getElementById("sound-success").play().catch(e => console.log("Garsas blokuojamas"));
 } else if (score === 2) {
 msg = "Tu jau beveik alyvmedžių ekspertas!";
 retryBtn.style.display = "block";
+successLink.style.display = "none";
 } else if (score === 1) {
 msg = "Tu jau alyvmedžių pradinukas!";
 retryBtn.style.display = "block";
+successLink.style.display = "none";
 } else {
 msg = "Bandyk dar kartą!";
 retryBtn.style.display = "block";
+successLink.style.display = "none";
 }
 
 document.getElementById("feedback").innerText = msg;
