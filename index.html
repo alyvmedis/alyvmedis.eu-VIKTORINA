@@ -64,11 +64,6 @@ h2 { color: var(--primary); font-size: 1.2rem; margin-bottom: 15px; min-height: 
 </head>
 <body>
 
-<audio id="sound-correct" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
-<audio id="sound-wrong" src="https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3"></audio>
-<audio id="sound-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
-<audio id="sound-wow" src="https://assets.mixkit.co/active_storage/sfx/1433/1433-preview.mp3"></audio>
-
 <div class="container">
 <div id="quiz-ui">
 <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
@@ -122,7 +117,6 @@ const questions = [
 { q: "Koks procesas yra būtinas (vernalizacija), kad alyvmedis pradėtų krauti žiedus?", a: ["Ilgalaikis karštis", "Visiška tamsa", "Periodinis šalčio poveikis", "Nuolatinis laistymas"], c: 2, img: "IMG_1406.JPG" }
 ];
 
-// TAVO TIKRI PRIZAI IR KODAI
 const prizes = [
 { name: "Carnaroli ryžiai 1kg", code: "carn", img: "prizas1.jpg" },
 { name: "Migdolai 500g", code: "migd", img: "prizas2.jpg" },
@@ -154,11 +148,9 @@ const correct = questions[current].c;
 document.querySelectorAll(".option").forEach(b => b.disabled = true);
 if(idx === correct) {
 btn.classList.add("selected-correct");
-document.getElementById("sound-correct").play().catch(e => {});
 score++;
 } else {
 btn.classList.add("selected-wrong");
-document.getElementById("sound-wrong").play().catch(e => {});
 }
 document.getElementById("next-btn").style.display = "block";
 }
@@ -178,7 +170,6 @@ if (score === 3) {
 document.getElementById("feedback").innerText = "Sveikiname tapus Alyvmedžių Ekspertu! 🌿🏆";
 document.getElementById("retry-btn").style.display = "none";
 document.getElementById("gift-section").style.display = "block";
-document.getElementById("sound-success").play().catch(e => {});
 } else {
 document.getElementById("feedback").innerText = score === 2 ? "Beveik pavyko! Pritrūko vieno teisingo atsakymo iki prizo..." : "Bandykite dar kartą!";
 document.getElementById("retry-btn").style.display = "block";
@@ -190,14 +181,12 @@ function revealRandomPrize(clickedBox) {
 const randomIndex = Math.floor(Math.random() * prizes.length);
 const selectedPrize = prizes[randomIndex];
 
-const displayArea = document.getElementById("prize-display-area");
 document.getElementById("prize-text").innerText = selectedPrize.name;
 document.getElementById("prize-img").src = selectedPrize.img;
 document.getElementById("promo-display").innerText = selectedPrize.code;
 
-displayArea.style.display = "block";
+document.getElementById("prize-display-area").style.display = "block";
 document.getElementById("expert-link").style.display = "block";
-document.getElementById("sound-wow").play().catch(e => {});
 
 document.querySelectorAll(".gift-box").forEach(box => {
 box.classList.add("disabled");
